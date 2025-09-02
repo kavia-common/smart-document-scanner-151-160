@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import android.widget.FrameLayout
-import com.camscanner.app.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.camscanner.app.ui.AccountFragment
 import com.camscanner.app.ui.DocumentsFragment
@@ -37,7 +35,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
+            // Show Documents on first launch and reflect selection in the bottom nav.
             openFragment(DocumentsFragment.newInstance())
+            bottomNav.selectedItemId = R.id.nav_documents
         }
     }
 

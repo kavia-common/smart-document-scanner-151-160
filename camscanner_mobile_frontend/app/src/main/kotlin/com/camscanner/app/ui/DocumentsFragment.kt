@@ -38,7 +38,7 @@ class DocumentsFragment : Fragment() {
         super.onAttach(context)
         // Safe to use context here; fragment is attached.
         repo = DocumentRepository.getInstance(context.applicationContext)
-        addMenu()
+        // Menu provider will be added in onViewCreated to ensure the view lifecycle owner is available.
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -51,6 +51,9 @@ class DocumentsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recycler?.layoutManager = LinearLayoutManager(requireContext())
         recycler?.adapter = adapter
+
+        // Register menu provider when view is created and bind to viewLifecycleOwner.
+        addMenu()
 
         searchView?.setOnQueryTextListener(object : android.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -83,7 +86,7 @@ class DocumentsFragment : Fragment() {
                     else -> false
                 }
             }
-        }, this)
+        }, viewLifecycleOwner)
     }
 
     private fun load(query: String?) {
