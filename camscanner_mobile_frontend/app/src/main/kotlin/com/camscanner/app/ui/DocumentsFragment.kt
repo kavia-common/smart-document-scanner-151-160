@@ -26,7 +26,8 @@ class DocumentsFragment : Fragment() {
     private var recycler: RecyclerView? = null
     private var searchView: SearchView? = null
     private val adapter by lazy { DocumentsListAdapter() }
-    private val repo by lazy { DocumentRepository.getInstance(requireContext().applicationContext) }
+    // Initialize repository after the Fragment is attached to avoid IllegalStateException.
+    private lateinit var repo: DocumentRepository
 
     companion object {
         // PUBLIC_INTERFACE
@@ -35,6 +36,8 @@ class DocumentsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        // Safe to use context here; fragment is attached.
+        repo = DocumentRepository.getInstance(context.applicationContext)
         addMenu()
     }
 
@@ -84,6 +87,8 @@ class DocumentsFragment : Fragment() {
     }
 
     private fun load(query: String?) {
+        // Guard in case load is called before repo is initialized (shouldn't happen, but defensive).
+        if (!this::repo.isInitialized) return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val items = if (query.isNullOrBlank()) repo.getAllDocuments()
             else repo.searchDocuments(query)
